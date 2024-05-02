@@ -1,9 +1,9 @@
 #pragma once
 
+#include <SFML/Graphics.hpp>
 #include <vector>
 #include <string>
 #include <random>
-#include <set>
 
 class Loader {
 private:

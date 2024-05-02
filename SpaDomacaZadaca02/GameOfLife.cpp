@@ -20,13 +20,44 @@ int GameOfLife::countNeighbors(int x, int y) {
 	return count;
 }
 
+void GameOfLife::generateDrawingGrid() {
+	int x = loader.getX();
+	int y = loader.getY();
+	float cs = loader.getCellSize();
+
+	renderTexture.create(
+		loader.getX() * cs,
+		loader.getY() * cs
+	);
+	renderTexture.clear();
+
+	sf::RectangleShape cell(sf::Vector2f(cs, cs));
+	cell.setOutlineThickness(1.f);
+	cell.setOutlineColor(sf::Color(128, 128, 128));
+	cell.setFillColor(sf::Color::Black);
+
+	for (int i = 0; i < x; ++i) {
+		for (int j = 0; j < y; ++j) {
+			cell.setPosition(sf::Vector2f(i * cs, j * cs));
+			renderTexture.draw(cell);
+		}
+	}
+
+	renderTexture.display();
+	drawingGrid.setTexture(renderTexture.getTexture());
+}
+
 GameOfLife::GameOfLife(sf::RenderWindow* window, int frameRate) {
 	this->window = window;
 	this->frameRate = frameRate;
-	colorIdx = 0;
 	noChangesCount = 0;
 	lifetime = 120;
+	drawMode = false;
 	setArr();
+}
+
+GameOfLife::~GameOfLife() {
+	loader.deleteArr(activeArr, loader.getX());
 }
 
 void GameOfLife::setArr() {
@@ -108,6 +139,10 @@ void GameOfLife::draw() {
 	int y = loader.getY();
 	float cs = loader.getCellSize();
 
+	if (drawMode) {
+		window->draw(drawingGrid);
+	}
+
 	sf::RectangleShape cell(sf::Vector2f(cs, cs));
 	int colorCounter = 0;
 	for (int i = 0; i < x; ++i) {
@@ -123,11 +158,10 @@ void GameOfLife::draw() {
 }
 
 void GameOfLife::update() {
-	if (paused) {
+	if (paused || drawMode) {
 		return;
 	}
 
-	++colorIdx;
 	++badStopwatch;
 	if (badStopwatch >= lifetime * frameRate) {
 		next();
@@ -172,10 +206,33 @@ void GameOfLife::pause() {
 	this->paused = !paused;
 }
 
+unsigned int GameOfLife::getFrameRate() {
+	return frameRate;
+}
+
 void GameOfLife::setFrameRate(unsigned int frameRate) {
 	this->frameRate = frameRate;
 }
 
 Loader GameOfLife::getLoader() {
 	return loader;
+}
+
+int GameOfLife::getLifetime() {
+	return lifetime;
+}
+
+void GameOfLife::toggleDrawMode() {
+	if (!drawMode) {
+		generateDrawingGrid();
+	}
+	drawMode = !drawMode;
+}
+
+bool GameOfLife::isDrawMode() {
+	return drawMode;
+}
+
+void GameOfLife::setCell(int x, int y, bool value) {
+	activeArr[x][y] = value;
 }

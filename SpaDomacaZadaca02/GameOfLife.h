@@ -1,6 +1,5 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
 #include <stack>
 #include "Loader.h"
 
@@ -24,22 +23,31 @@ private:
 	std::stack<GameRecording> history;
 	std::stack<GameRecording> future;
 	int frameRate;
-	int colorIdx;
 	int noChangesCount;
 	int lifetime;
 	int badStopwatch;
 	bool paused;
+	bool drawMode;
+	sf::RenderTexture renderTexture;
+	sf::Sprite drawingGrid;
 
 	int countNeighbors(int x, int y);
+	void generateDrawingGrid();
 
 public:
 	GameOfLife(sf::RenderWindow* window, int frameRate);
+	~GameOfLife();
 	void setArr();
 	void next();
 	void prev();
 	void draw();
 	void update();
 	void pause();
+	unsigned int getFrameRate();
 	void setFrameRate(unsigned int frameRate);
 	Loader getLoader();
+	int getLifetime();
+	void toggleDrawMode();
+	bool isDrawMode();
+	void setCell(int x, int y, bool value);
 };
