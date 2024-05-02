@@ -53,7 +53,7 @@ int main() {
 	sf::Text note;
 	note.setFont(font);
 	note.setString("[There are " + std::to_string(gameOfLife.getLoader().getPresetsSize())
-		+ " unique game presets chosen at random\nwith a 5% chance of a completely random game;\ngames change after ~"
+		+ " unique game presets chosen at random\nwith a 5% chance of a completely random game;\ngames change automatically after ~"
 		+ std::to_string(gameOfLife.getLifetime()) + " s]"
 	);
 	note.setCharacterSize(20 * Util::getScale());
