@@ -206,8 +206,8 @@ bool** Loader::initArr(int x, int y) {
 	return arr;
 }
 
-void Loader::deleteArr(bool** arr, int y) {
-	for (int i = 0; i < y; ++i) {
+void Loader::deleteArr(bool** arr, int x) {
+	for (int i = 0; i < x; ++i) {
 		delete[] arr[i];
 	}
 	delete[] arr;
