@@ -98,6 +98,8 @@ bool** Loader::insertArrayInMiddle(bool** smaller, int smallerX, int smallerY) {
 		++is;
 	}
 
+	deleteArr(smaller, smallerX);
+
 	return larger;
 }
 
