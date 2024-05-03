@@ -3,24 +3,12 @@
 #include "Loader.h"
 #include "Util.h"
 
-static std::vector<std::string> splitByNewLine(std::string rle) {
+static std::vector<std::string> split(std::string input, std::string delimiter) {
 	std::vector<std::string> result;
 	size_t pos = 0;
-	while ((pos = rle.find("\n")) != std::string::npos) {
-		result.push_back(rle.substr(0, pos));
-		rle.erase(0, pos + 1);
-	}
-	result.push_back(rle);
-	return result;
-}
-
-static std::vector<std::string> splitByComma(std::string input) {
-	std::vector<std::string> result;
-	size_t commaPos = input.find(",");
-	while (commaPos != std::string::npos) {
-		result.push_back(input.substr(0, commaPos));
-		input.erase(0, commaPos + 1);
-		commaPos = input.find(",");
+	while ((pos = input.find(delimiter)) != std::string::npos) {
+		result.push_back(input.substr(0, pos));
+		input.erase(0, pos + 1);
 	}
 	result.push_back(input);
 	return result;
@@ -80,8 +68,8 @@ static std::string concatenateVectorOfStrings(std::vector<std::string>& strings,
 }
 
 bool** Loader::createPresetArray(std::string rle) {
-	std::vector<std::string> newLineSplit = splitByNewLine(rle);
-	std::vector<std::string> commaSplit = splitByComma(newLineSplit[0]);
+	std::vector<std::string> newLineSplit = split(rle, "\n");
+	std::vector<std::string> commaSplit = split(newLineSplit[0], ",");
 	int x = extractCoordinate(commaSplit[0]);
 	int y = extractCoordinate(commaSplit[1]);
 
