@@ -42,7 +42,7 @@ int main() {
 
 	GameOfLife gameOfLife(&window, frameRate);
 
-	std::string txt = "D toggle draw mode\n(L_CLICK alive, R_CLICK dead)\nLEFT prev, RIGHT next\nDOWN --fps, UP ++fps\nSPACE pause\nfps = ";
+	std::string txt = "D toggle draw mode\n(L_CLICK alive, R_CLICK dead)\nC kill alive cells\nLEFT prev, RIGHT next\nDOWN --fps, UP ++fps\nSPACE pause\nfps = ";
 	sf::Text controls;
 	controls.setFont(font);
 	controls.setString(txt + std::to_string(frameRate));
@@ -88,6 +88,9 @@ int main() {
 						+ (!gameOfLife.isDrawMode() ? " (locked)" : "")
 					);
 					gameOfLife.toggleDrawMode();
+					break;
+				case sf::Keyboard::Key::C:
+					gameOfLife.clear();
 					break;
 				default:
 					break;

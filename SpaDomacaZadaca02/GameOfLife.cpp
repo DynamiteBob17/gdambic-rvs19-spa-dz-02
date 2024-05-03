@@ -236,3 +236,11 @@ bool GameOfLife::isDrawMode() {
 void GameOfLife::setCell(int x, int y, bool value) {
 	activeArr[x][y] = value;
 }
+
+void GameOfLife::clear() {
+	for (int i = 0; i < loader.getX(); ++i) {
+		for (int j = 0; j < loader.getY(); ++j) {
+			activeArr[i][j] = false;
+		}
+	}
+}

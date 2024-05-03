@@ -50,4 +50,5 @@ public:
 	void toggleDrawMode();
 	bool isDrawMode();
 	void setCell(int x, int y, bool value);
+	void clear();
 };
