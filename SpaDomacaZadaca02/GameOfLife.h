@@ -1,7 +1,7 @@
 #pragma once
 
 #include <stack>
-#include "Loader.h"
+#include "CellularAutomata.h"
 
 struct GameRecording {
 	bool** arr;
@@ -14,41 +14,26 @@ struct GameRecording {
 	}
 };
 
-class GameOfLife {
+class GameOfLife : public CellularAutomata {
 private:
-	sf::RenderWindow* window;
-	Loader loader;
-	bool** activeArr;
 	bool** activeArrOrg;
 	std::stack<GameRecording> history;
 	std::stack<GameRecording> future;
-	int frameRate;
 	int noChangesCount;
 	int lifetime;
 	int badStopwatch;
-	bool paused;
-	bool drawMode;
-	sf::RenderTexture renderTexture;
-	sf::Sprite drawingGrid;
 
+	void newGrid() override;
 	int countNeighbors(int x, int y);
-	void generateDrawingGrid();
 
 public:
-	GameOfLife(sf::RenderWindow* window, int frameRate);
+	GameOfLife(sf::RenderWindow& window, Loader& loader, sf::Font& font, int frameRate);
 	~GameOfLife();
-	void setArr();
 	void next();
 	void prev();
-	void draw();
-	void update();
-	void pause();
-	unsigned int getFrameRate();
-	void setFrameRate(unsigned int frameRate);
-	Loader getLoader();
-	int getLifetime();
-	void toggleDrawMode();
-	bool isDrawMode();
-	void setCell(int x, int y, bool value);
-	void clear();
+	void draw() override;
+	void update() override;
+	void drawControls() override;
+	void handleControls(sf::Event& event) override;
+	int getLifetime() const;
 };

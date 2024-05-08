@@ -1,66 +1,7 @@
 #include "GameOfLife.h"
+#include "Util.h"
 
-int GameOfLife::countNeighbors(int x, int y) {
-	int count = 0;
-	int _x = loader.getX();
-	int _y = loader.getY();
-
-	for (int i = -1; i <= 1; ++i) {
-		for (int j = -1; j <= 1; ++j) {
-			if (!(i == 0 && j == 0)) {
-				int i2 = (i + x + _x) % _x;
-				int j2 = (j + y + _y) % _y;
-				if (activeArr[i2][j2]) {
-					++count;
-				}
-			}
-		}
-	}
-
-	return count;
-}
-
-void GameOfLife::generateDrawingGrid() {
-	int x = loader.getX();
-	int y = loader.getY();
-	float cs = loader.getCellSize();
-
-	renderTexture.create(
-		loader.getX() * cs,
-		loader.getY() * cs
-	);
-	renderTexture.clear();
-
-	sf::RectangleShape cell(sf::Vector2f(cs, cs));
-	cell.setOutlineThickness(1.f);
-	cell.setOutlineColor(sf::Color(128, 128, 128));
-	cell.setFillColor(sf::Color::Black);
-
-	for (int i = 0; i < x; ++i) {
-		for (int j = 0; j < y; ++j) {
-			cell.setPosition(sf::Vector2f(i * cs, j * cs));
-			renderTexture.draw(cell);
-		}
-	}
-
-	renderTexture.display();
-	drawingGrid.setTexture(renderTexture.getTexture());
-}
-
-GameOfLife::GameOfLife(sf::RenderWindow* window, int frameRate) {
-	this->window = window;
-	this->frameRate = frameRate;
-	noChangesCount = 0;
-	lifetime = 120;
-	drawMode = false;
-	setArr();
-}
-
-GameOfLife::~GameOfLife() {
-	loader.deleteArr(activeArr, loader.getX());
-}
-
-void GameOfLife::setArr() {
+void GameOfLife::newGrid() {
 	std::random_device rd;
 	std::default_random_engine gen(rd());
 	std::uniform_int_distribution<int> dis(1, 20); // 5% chance for random array
@@ -84,6 +25,58 @@ void GameOfLife::setArr() {
 	badStopwatch = 0;
 }
 
+int GameOfLife::countNeighbors(int x, int y) {
+	int count = 0;
+	int _x = loader.getX();
+	int _y = loader.getY();
+
+	for (int i = -1; i <= 1; ++i) {
+		for (int j = -1; j <= 1; ++j) {
+			if (!(i == 0 && j == 0)) {
+				int i2 = (i + x + _x) % _x;
+				int j2 = (j + y + _y) % _y;
+				if (activeArr[i2][j2]) {
+					++count;
+				}
+			}
+		}
+	}
+
+	return count;
+}
+
+GameOfLife::GameOfLife(
+	sf::RenderWindow& window,
+	Loader& loader,
+	sf::Font& font,
+	int frameRate
+) : CellularAutomata(window, loader, frameRate, false) {
+	noChangesCount = 0;
+	lifetime = 120;
+
+	newGrid();
+
+	controlsStr = "D toggle draw mode\n(L_CLICK alive, R_CLICK dead)\nC kill alive cells\nLEFT prev, RIGHT next\nDOWN --fps, UP ++fps\nSPACE pause\nfps = ";
+	controls.setFont(font);
+	controls.setString(controlsStr + std::to_string(frameRate));
+	controls.setCharacterSize(20 * Util::getScale());
+	controls.setFillColor(sf::Color::White);
+	controls.setStyle(sf::Text::Bold);
+
+	note.setFont(font);
+	note.setString("[There are " + std::to_string(loader.getPresetsSize())
+		+ " unique game presets chosen at random\nwith a 5% chance of a completely random game;\ngames change automatically after ~"
+		+ std::to_string(lifetime) + " s]"
+	);
+	note.setCharacterSize(20 * Util::getScale());
+	note.setFillColor(sf::Color::White);
+	note.setPosition(sf::Vector2f(0, sf::VideoMode::getDesktopMode().height - 75 * Util::getScale()));
+}
+
+GameOfLife::~GameOfLife() {
+	loader.deleteArr(activeArrOrg, loader.getX());
+}
+
 void GameOfLife::next() {
 	history.push(GameRecording(activeArrOrg, loader.getX(), loader.getY()));
 
@@ -94,9 +87,8 @@ void GameOfLife::next() {
 		future.pop();
 
 		badStopwatch = 0;
-	}
-	else {
-		setArr();
+	} else {
+		newGrid();
 	}
 }
 
@@ -112,35 +104,13 @@ void GameOfLife::prev() {
 	badStopwatch = 0;
 }
 
-static sf::Color HSBToRGB(float hue, float saturation, float brightness) {
-	float r, g, b;
-
-	int i = floor(hue * 6);
-	float f = hue * 6 - i;
-	float p = brightness * (1 - saturation);
-	float q = brightness * (1 - f * saturation);
-	float t = brightness * (1 - (1 - f) * saturation);
-
-	switch (i % 6) {
-	case 0: r = brightness; g = t, b = p; break;
-	case 1: r = q; g = brightness; b = p; break;
-	case 2: r = p; g = brightness; b = t; break;
-	case 3: r = p; g = q; b = brightness; break;
-	case 4: r = t; g = p; b = brightness; break;
-	case 5: r = brightness; g = p; b = q; break;
-	default: r = brightness; g = t, b = p; break;
-	}
-
-	return sf::Color(r * 255, g * 255, b * 255);
-}
-
 void GameOfLife::draw() {
 	int x = loader.getX();
 	int y = loader.getY();
 	float cs = loader.getCellSize();
 
 	if (drawMode) {
-		window->draw(drawingGrid);
+		window.draw(drawingGrid);
 	}
 
 	sf::RectangleShape cell(sf::Vector2f(cs, cs));
@@ -150,8 +120,8 @@ void GameOfLife::draw() {
 			++colorCounter;
 			if (activeArr[i][j]) {
 				cell.setPosition(sf::Vector2f(i * cs, j * cs));
-				cell.setFillColor(HSBToRGB((colorCounter * 1.f) / (1.f * x * y), 1.f, 1.f));
-				window->draw(cell);
+				cell.setFillColor(Util::HSBtoRGB((colorCounter * 1.f) / (1.f * x * y), 1.f, 1.f));
+				window.draw(cell);
 			}
 		}
 	}
@@ -175,12 +145,10 @@ void GameOfLife::update() {
 	for (int i = 0; i < x; ++i) {
 		for (int j = 0; j < y; ++j) {
 			int neighbors = countNeighbors(i, j);
-			if (activeArr[i][j]) {
-				if (neighbors == 2 || neighbors == 3) {
-					nextArr[i][j] = true;
-				}
-			}
-			else if (neighbors == 3) {
+
+			if (activeArr[i][j] && (neighbors == 2 || neighbors == 3)) {
+				nextArr[i][j] = true;
+			} else if (neighbors == 3) {
 				nextArr[i][j] = true;
 			}
 
@@ -189,6 +157,32 @@ void GameOfLife::update() {
 			}
 		}
 	}
+
+	/*for (int i = 0; i < x; ++i) {
+		for (int j = 0; j < y; ++j) {
+			if (!activeArr[i][j]) continue;
+
+			if (j + 1 < y && !activeArr[i][j + 1]) {
+				nextArr[i][j + 1] = true;
+			} else if (j + 1 < y) {
+				bool leftEmpty = i - 1 >= 0 && !activeArr[i - 1][j + 1];
+				bool rightEmpty = i + 1 < x && !activeArr[i + 1][j + 1];
+
+				if (leftEmpty && rightEmpty) {
+					int dir = dis(gen) ? -1 : 1;
+					nextArr[i + dir][j + 1] = true;
+				} else if (leftEmpty) {
+					nextArr[i - 1][j + 1] = true;
+				} else if (rightEmpty) {
+					nextArr[i + 1][j + 1] = true;
+				} else {
+					nextArr[i][j] = true;
+				}
+			} else {
+				nextArr[i][j] = true;
+			}
+		}
+	}*/
 
 	loader.deleteArr(activeArr, x);
 	activeArr = nextArr;
@@ -202,45 +196,71 @@ void GameOfLife::update() {
 	}
 }
 
-void GameOfLife::pause() {
-	this->paused = !paused;
+void GameOfLife::drawControls() {
+	window.draw(controls);
+	window.draw(note);
 }
 
-unsigned int GameOfLife::getFrameRate() {
-	return frameRate;
-}
-
-void GameOfLife::setFrameRate(unsigned int frameRate) {
-	this->frameRate = frameRate;
-}
-
-Loader GameOfLife::getLoader() {
-	return loader;
-}
-
-int GameOfLife::getLifetime() {
-	return lifetime;
-}
-
-void GameOfLife::toggleDrawMode() {
-	if (!drawMode) {
-		generateDrawingGrid();
-	}
-	drawMode = !drawMode;
-}
-
-bool GameOfLife::isDrawMode() {
-	return drawMode;
-}
-
-void GameOfLife::setCell(int x, int y, bool value) {
-	activeArr[x][y] = value;
-}
-
-void GameOfLife::clear() {
-	for (int i = 0; i < loader.getX(); ++i) {
-		for (int j = 0; j < loader.getY(); ++j) {
-			activeArr[i][j] = false;
+void GameOfLife::handleControls(sf::Event& event) {
+	if (event.type == sf::Event::KeyReleased) {
+		switch (event.key.code) {
+		case sf::Keyboard::Key::Space:
+			if (!drawMode) {
+				pause();
+			}
+			break;
+		case sf::Keyboard::Key::Right:
+			if (!drawMode) {
+				next();
+			}
+			break;
+		case sf::Keyboard::Key::Left:
+			if (!drawMode) {
+				prev();
+			}
+			break;
+		case sf::Keyboard::Key::D:
+			window.setFramerateLimit(
+				!drawMode ? 60 : frameRate
+			);
+			controls.setString(
+				controlsStr + std::to_string(frameRate)
+				+ (!drawMode ? " (locked)" : "")
+				+ (!drawMode ? "\n(prev/next disabled)" : "")
+			);
+			toggleDrawMode();
+			break;
+		case sf::Keyboard::Key::C:
+			clear();
+			break;
+		default:
+			break;
 		}
 	}
+	else if (event.type == sf::Event::KeyPressed) {
+		switch (event.key.code) {
+		case sf::Keyboard::Key::Up:
+			if (frameRate < 60 && !drawMode) {
+				++frameRate;
+				controls.setString(controlsStr + std::to_string(frameRate));
+				setFrameRate(frameRate);
+				window.setFramerateLimit(frameRate);
+			}
+			break;
+		case sf::Keyboard::Key::Down:
+			if (frameRate > 1 && !drawMode) {
+				--frameRate;
+				controls.setString(controlsStr + std::to_string(frameRate));
+				setFrameRate(frameRate);
+				window.setFramerateLimit(frameRate);
+			}
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+int GameOfLife::getLifetime() const {
+	return lifetime;
 }

@@ -119,13 +119,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CellularAutomata.cpp" />
     <ClCompile Include="GameOfLife.cpp" />
     <ClCompile Include="Loader.cpp" />
+    <ClCompile Include="MouseListener.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CellularAutomata.h" />
     <ClInclude Include="GameOfLife.h" />
     <ClInclude Include="Loader.h" />
+    <ClInclude Include="MouseListener.h" />
     <ClInclude Include="Util.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

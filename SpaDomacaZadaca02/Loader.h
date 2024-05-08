@@ -20,6 +20,9 @@ private:
 		int smallerX,
 		int smallerY
 	);
+	void setX(int x);
+	void setY(int y);
+	void setCellSize(float cellSize);
 
 public:
 	Loader();
@@ -28,12 +31,9 @@ public:
 	bool** initArr(int x, int y);
 	void deleteArr(bool** arr, int x);
 	bool** copyArr(bool** source, int x, int y);
-	float getCellSize() const;
+	void determineCellSize(int sx, int sy);
 	int getX() const;
 	int getY() const;
-	void determineCellSize(int sx, int sy);
-	void setCellSize(float cellSize);
-	void setX(int x);
-	void setY(int y);
+	float getCellSize() const;
 	int getPresetsSize();
 };

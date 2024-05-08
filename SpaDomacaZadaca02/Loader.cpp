@@ -67,6 +67,33 @@ static std::string concatenateVectorOfStrings(std::vector<std::string>& strings,
 	return res;
 }
 
+void Loader::fillPresets() {
+	std::ifstream file("presets.txt");
+
+	if (!file.is_open()) {
+		throw std::runtime_error("Error: unable to open presets.txt file!");
+	}
+
+	std::stringstream ss;
+	std::string line;
+
+	while (std::getline(file, line)) {
+		if (line == "NEXT") {
+			presets.push_back(ss.str());
+			ss.str("");
+		}
+		else {
+			ss << line << "\n";
+		}
+	}
+
+	if (!ss.str().empty()) {
+		presets.push_back(ss.str());
+	}
+
+	file.close();
+}
+
 bool** Loader::createPresetArray(std::string rle) {
 	std::vector<std::string> newLineSplit = split(rle, "\n");
 	std::vector<std::string> commaSplit = split(newLineSplit[0], ",");
@@ -103,45 +130,16 @@ bool** Loader::insertArrayInMiddle(bool** smaller, int smallerX, int smallerY) {
 	return larger;
 }
 
-void Loader::determineCellSize(int minimalX, int minimalY) {
-	for (auto& cellSize : CELL_SIZES) {
-		int x = (int)(sf::VideoMode::getDesktopMode().width / cellSize);
-		int y = (int)(sf::VideoMode::getDesktopMode().height / cellSize);
-
-		if (x >= minimalX && y >= minimalY) {
-			setCellSize(cellSize);
-			setX(x);
-			setY(y);
-			return;
-		}
-	}
+void Loader::setX(int x) {
+	this->x = x;
 }
 
-void Loader::fillPresets() {
-	std::ifstream file("presets.txt");
+void Loader::setY(int y) {
+	this->y = y;
+}
 
-	if (!file.is_open()) {
-		throw std::runtime_error("Error: unable to open presets.txt file!");
-	}
-
-	std::stringstream ss;
-	std::string line;
-
-	while (std::getline(file, line)) {
-		if (line == "NEXT") {
-			presets.push_back(ss.str());
-			ss.str("");
-		}
-		else {
-			ss << line << "\n";
-		}
-	}
-
-	if (!ss.str().empty()) {
-		presets.push_back(ss.str());
-	}
-
-	file.close();
+void Loader::setCellSize(float cellSize) {
+	this->cellSize = cellSize;
 }
 
 Loader::Loader() {
@@ -213,8 +211,18 @@ bool** Loader::copyArr(bool** source, int x, int y) {
 	return copy;
 }
 
-float Loader::getCellSize() const {
-	return cellSize;
+void Loader::determineCellSize(int minimalX, int minimalY) {
+	for (auto& cellSize : CELL_SIZES) {
+		int x = (int)(sf::VideoMode::getDesktopMode().width / cellSize);
+		int y = (int)(sf::VideoMode::getDesktopMode().height / cellSize);
+
+		if (x >= minimalX && y >= minimalY) {
+			setX(x);
+			setY(y);
+			setCellSize(cellSize);
+			return;
+		}
+	}
 }
 
 int Loader::getX() const {
@@ -225,16 +233,8 @@ int Loader::getY() const {
 	return y;
 }
 
-void Loader::setCellSize(float cellSize) {
-	this->cellSize = cellSize;
-}
-
-void Loader::setX(int x) {
-	this->x = x;
-}
-
-void Loader::setY(int y) {
-	this->y = y;
+float Loader::getCellSize() const {
+	return cellSize;
 }
 
 int Loader::getPresetsSize() {
