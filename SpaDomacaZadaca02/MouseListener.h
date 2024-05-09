@@ -4,7 +4,7 @@
 
 class MouseListener {
 private:
-	CellularAutomata& cellularAutomata;
+	CellularAutomata* cellularAutomata;
 	sf::RenderWindow& window;
 
 	bool isMouseOverWindow() const;
@@ -12,7 +12,7 @@ private:
 
 public:
 	MouseListener(
-		CellularAutomata& cellularAutomata,
+		CellularAutomata* cellularAutomata,
 		sf::RenderWindow& window
 	) : cellularAutomata(cellularAutomata), window(window) {}
 	void handleDrawing();

@@ -5,14 +5,14 @@ void GameOfLife::newGrid() {
 	std::random_device rd;
 	std::default_random_engine gen(rd());
 	std::uniform_int_distribution<int> dis(1, 20); // 5% chance for random array
-	bool** tempArr = dis(gen) == 1 ? loader.randomArray() : loader.randomPreset();
+	int** tempArr = dis(gen) == 1 ? loader.randomArray() : loader.randomPreset();
 
 	int x = loader.getX();
 	int y = loader.getY();
 
-	activeArr = new bool* [x];
+	activeArr = new int* [x];
 	for (int i = 0; i < x; ++i) {
-		activeArr[i] = new bool[y];
+		activeArr[i] = new int[y];
 		for (int j = 0; j < y; ++j) {
 			activeArr[i][j] = tempArr[i][j];
 		}
@@ -35,7 +35,7 @@ int GameOfLife::countNeighbors(int x, int y) {
 			if (!(i == 0 && j == 0)) {
 				int i2 = (i + x + _x) % _x;
 				int j2 = (j + y + _y) % _y;
-				if (activeArr[i2][j2]) {
+				if (activeArr[i2][j2] > 0) {
 					++count;
 				}
 			}
@@ -53,10 +53,11 @@ GameOfLife::GameOfLife(
 ) : CellularAutomata(window, loader, frameRate, false) {
 	noChangesCount = 0;
 	lifetime = 120;
+	paused = true;
 
 	newGrid();
 
-	controlsStr = "D toggle draw mode\n(L_CLICK alive, R_CLICK dead)\nC kill alive cells\nLEFT prev, RIGHT next\nDOWN --fps, UP ++fps\nSPACE pause\nfps = ";
+	controlsStr = "SPACE start/pause\nD toggle draw mode\n(L_CLICK alive, R_CLICK dead)\nC kill alive cells\nLEFT prev, RIGHT next\nDOWN --fps, UP ++fps\nfps = ";
 	controls.setFont(font);
 	controls.setString(controlsStr + std::to_string(frameRate));
 	controls.setCharacterSize(20 * Util::getScale());
@@ -118,7 +119,7 @@ void GameOfLife::draw() {
 	for (int i = 0; i < x; ++i) {
 		for (int j = 0; j < y; ++j) {
 			++colorCounter;
-			if (activeArr[i][j]) {
+			if (activeArr[i][j] == 1) {
 				cell.setPosition(sf::Vector2f(i * cs, j * cs));
 				cell.setFillColor(Util::HSBtoRGB((colorCounter * 1.f) / (1.f * x * y), 1.f, 1.f));
 				window.draw(cell);
@@ -128,9 +129,7 @@ void GameOfLife::draw() {
 }
 
 void GameOfLife::update() {
-	if (paused || drawMode) {
-		return;
-	}
+	if (paused || drawMode) return;
 
 	++badStopwatch;
 	if (badStopwatch >= lifetime * frameRate) {
@@ -140,13 +139,13 @@ void GameOfLife::update() {
 	int x = loader.getX();
 	int y = loader.getY();
 	bool changed = false;
-	bool** nextArr = loader.initArr(x, y);
+	int** nextArr = loader.initArr(x, y);
 
 	for (int i = 0; i < x; ++i) {
 		for (int j = 0; j < y; ++j) {
 			int neighbors = countNeighbors(i, j);
 
-			if (activeArr[i][j] && (neighbors == 2 || neighbors == 3)) {
+			if (activeArr[i][j] > 0 && (neighbors == 2 || neighbors == 3)) {
 				nextArr[i][j] = true;
 			} else if (neighbors == 3) {
 				nextArr[i][j] = true;
@@ -157,32 +156,6 @@ void GameOfLife::update() {
 			}
 		}
 	}
-
-	/*for (int i = 0; i < x; ++i) {
-		for (int j = 0; j < y; ++j) {
-			if (!activeArr[i][j]) continue;
-
-			if (j + 1 < y && !activeArr[i][j + 1]) {
-				nextArr[i][j + 1] = true;
-			} else if (j + 1 < y) {
-				bool leftEmpty = i - 1 >= 0 && !activeArr[i - 1][j + 1];
-				bool rightEmpty = i + 1 < x && !activeArr[i + 1][j + 1];
-
-				if (leftEmpty && rightEmpty) {
-					int dir = dis(gen) ? -1 : 1;
-					nextArr[i + dir][j + 1] = true;
-				} else if (leftEmpty) {
-					nextArr[i - 1][j + 1] = true;
-				} else if (rightEmpty) {
-					nextArr[i + 1][j + 1] = true;
-				} else {
-					nextArr[i][j] = true;
-				}
-			} else {
-				nextArr[i][j] = true;
-			}
-		}
-	}*/
 
 	loader.deleteArr(activeArr, x);
 	activeArr = nextArr;
@@ -236,8 +209,7 @@ void GameOfLife::handleControls(sf::Event& event) {
 		default:
 			break;
 		}
-	}
-	else if (event.type == sf::Event::KeyPressed) {
+	} else if (event.type == sf::Event::KeyPressed) {
 		switch (event.key.code) {
 		case sf::Keyboard::Key::Up:
 			if (frameRate < 60 && !drawMode) {

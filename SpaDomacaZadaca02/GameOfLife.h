@@ -4,10 +4,10 @@
 #include "CellularAutomata.h"
 
 struct GameRecording {
-	bool** arr;
+	int** arr;
 	int x;
 	int y;
-	GameRecording(bool** arr, int x, int y) {
+	GameRecording(int** arr, int x, int y) {
 		this->arr = arr;
 		this->x = x;
 		this->y = y;
@@ -16,7 +16,7 @@ struct GameRecording {
 
 class GameOfLife : public CellularAutomata {
 private:
-	bool** activeArrOrg;
+	int** activeArrOrg;
 	std::stack<GameRecording> history;
 	std::stack<GameRecording> future;
 	int noChangesCount;

@@ -18,7 +18,7 @@ static int extractCoordinate(std::string str) {
 	return std::stoi(str.substr(str.find("=") + 1));
 }
 
-static void parseRLE(bool** arr, std::string rleCoords) {
+static void parseRLE(int** arr, std::string rleCoords) {
 	std::string number = "";
 	int xTracker = 0;
 	int yTracker = 0;
@@ -41,7 +41,7 @@ static void parseRLE(bool** arr, std::string rleCoords) {
 		case 'o':
 		{
 			for (int i = 0; i < count; ++i) {
-				arr[xTracker][yTracker] = true;
+				arr[xTracker][yTracker] = 1;
 				++xTracker;
 			}
 		} break;
@@ -94,7 +94,7 @@ void Loader::fillPresets() {
 	file.close();
 }
 
-bool** Loader::createPresetArray(std::string rle) {
+int** Loader::createPresetArray(std::string rle) {
 	std::vector<std::string> newLineSplit = split(rle, "\n");
 	std::vector<std::string> commaSplit = split(newLineSplit[0], ",");
 	int x = extractCoordinate(commaSplit[0]);
@@ -106,7 +106,7 @@ bool** Loader::createPresetArray(std::string rle) {
 	return insertArrayInMiddle(arr, x, y);
 }
 
-bool** Loader::insertArrayInMiddle(bool** smaller, int smallerX, int smallerY) {
+int** Loader::insertArrayInMiddle(int** smaller, int smallerX, int smallerY) {
 	determineCellSize(smallerX, smallerY);
 
 	auto larger = initArr(x, y);
@@ -142,7 +142,7 @@ void Loader::setCellSize(float cellSize) {
 	this->cellSize = cellSize;
 }
 
-Loader::Loader() {
+Loader::Loader(bool isGameOfLife) {
 	CELL_SIZES = {
 	10 * Util::getScale(),
 	8 * Util::getScale(),
@@ -153,10 +153,11 @@ Loader::Loader() {
 	2 * Util::getScale(),
 	1 * Util::getScale()
 	};
-	fillPresets();
+	if (isGameOfLife) fillPresets();
+	else determineCellSize(1, 1);
 }
 
-bool** Loader::randomArray() {
+int** Loader::randomArray() {
 	setCellSize(6 * Util::getScale());
 	setX((int)(sf::VideoMode::getDesktopMode().width / cellSize));
 	setY((int)(sf::VideoMode::getDesktopMode().height / cellSize));
@@ -169,40 +170,50 @@ bool** Loader::randomArray() {
 
 	for (int i = 0; i < x; ++i) {
 		for (int j = 0; j < y; ++j) {
-			arr[i][j] = dis(gen) == 1;
+			arr[i][j] = dis(gen) == 1 ? 1 : 0;
 		}
 	}
 
 	return arr;
 }
 
-bool** Loader::randomPreset() {
+int** Loader::randomPreset() {
 	std::random_device rd;
 	std::default_random_engine gen(rd());
 	std::uniform_int_distribution<int> dis(0, presets.size() - 1);
 	return createPresetArray(presets[dis(gen)]);
 }
 
-bool** Loader::initArr(int x, int y) {
-	bool** arr = new bool* [x];
+int** Loader::emptyArray(int rawCellSize) {
+	setCellSize(rawCellSize * Util::getScale());
+	setX((int)(sf::VideoMode::getDesktopMode().width / cellSize));
+	setY((int)(sf::VideoMode::getDesktopMode().height / cellSize));
+
+	auto arr = initArr(x, y);
+
+	return arr;
+}
+
+int** Loader::initArr(int x, int y) {
+	int** arr = new int* [x];
 	for (int i = 0; i < x; ++i) {
-		arr[i] = new bool[y];
+		arr[i] = new int[y];
 		for (int j = 0; j < y; ++j) {
-			arr[i][j] = false;
+			arr[i][j] = 0;
 		}
 	}
 	return arr;
 }
 
-void Loader::deleteArr(bool** arr, int x) {
+void Loader::deleteArr(int** arr, int x) {
 	for (int i = 0; i < x; ++i) {
 		delete[] arr[i];
 	}
 	delete[] arr;
 }
 
-bool** Loader::copyArr(bool** source, int x, int y) {
-	bool** copy = initArr(x, y);
+int** Loader::copyArr(int** source, int x, int y) {
+	int** copy = initArr(x, y);
 	for (int i = 0; i < x; ++i) {
 		for (int j = 0; j < y; ++j) {
 			copy[i][j] = source[i][j];

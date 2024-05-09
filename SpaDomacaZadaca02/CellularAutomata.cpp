@@ -1,4 +1,5 @@
 #include "CellularAutomata.h"
+#include "Util.h"
 
 void CellularAutomata::generateDrawingGrid() {
 	int x = loader.getX();
@@ -34,7 +35,7 @@ void CellularAutomata::pause() {
 void CellularAutomata::clear() {
 	for (int i = 0; i < loader.getX(); ++i) {
 		for (int j = 0; j < loader.getY(); ++j) {
-			activeArr[i][j] = false;
+			activeArr[i][j] = 0;
 		}
 	}
 }
@@ -61,6 +62,7 @@ CellularAutomata::CellularAutomata(
     activeArr = loader.initArr(0, 0);
     this->drawMode = drawMode;
     paused = false;
+	hue = 1;
 }
 
 CellularAutomata::~CellularAutomata() {
@@ -71,10 +73,35 @@ Loader CellularAutomata::getLoader() {
 	return loader;
 }
 
+unsigned int CellularAutomata::getFrameRate() const {
+	return frameRate;
+}
+
 bool CellularAutomata::isDrawMode() const {
 	return drawMode;
 }
 
-void CellularAutomata::setCell(int x, int y, bool value) {
-	activeArr[x][y] = value;
+void CellularAutomata::setCell(int x, int y, int value, bool multiple) {
+	if (multiple && value != 0) {
+		std::uniform_int_distribution<int> dis(1, 4);
+		int _x = loader.getX();
+		int _y = loader.getY();
+		int boxSize = 8;
+		int diff = boxSize / 2;
+
+		for (int i = x - diff; i <= x + diff; ++i) {
+			for (int j = y - diff; j <= y + diff; ++j) {
+				if (Util::isWithinBounds(i, j, _x, _y) && dis(gen) == 1) {
+					activeArr[i][j] = hue;
+				}
+			}
+		}
+
+		++hue;
+		if (hue > HUE_MAX) {
+			hue = 0;
+		}
+	} else {
+		activeArr[x][y] = value;
+	}
 }

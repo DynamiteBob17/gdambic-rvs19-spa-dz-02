@@ -30,6 +30,12 @@
     <ClCompile Include="MouseListener.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="FallingSand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LangtonsAnt.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameOfLife.h">
@@ -45,6 +51,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MouseListener.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FallingSand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LangtonsAnt.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

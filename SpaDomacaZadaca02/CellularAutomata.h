@@ -6,8 +6,8 @@ class CellularAutomata {
 protected:
 	sf::RenderWindow& window;
 	Loader loader;
-	bool** activeArr;
-	int frameRate;
+	int** activeArr;
+	unsigned int frameRate;
 	bool paused;
 	bool drawMode;
 	sf::RenderTexture renderTexture;
@@ -15,6 +15,11 @@ protected:
 	std::string controlsStr;
 	sf::Text controls;
 	sf::Text note;
+	std::random_device rd;
+	std::default_random_engine gen;
+	int hue;
+
+	static int const HUE_MAX = 1080;
 
 	virtual void newGrid() = 0;
 	void generateDrawingGrid();
@@ -31,6 +36,7 @@ public:
 	virtual void drawControls() = 0;
 	virtual void handleControls(sf::Event& event) = 0;
 	Loader getLoader();
+	unsigned int getFrameRate() const;
 	bool isDrawMode() const;
-	void setCell(int x, int y, bool value);
+	void setCell(int x, int y, int value, bool multiple);
 };

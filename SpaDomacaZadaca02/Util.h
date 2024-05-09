@@ -32,4 +32,8 @@ namespace Util {
 
 		return sf::Color(r * 255, g * 255, b * 255);
 	}
+
+	inline bool isWithinBounds(int i, int j, int x, int y) {
+		return i >= 0 && i < x && j >= 0 && j < y;
+	}
 }

@@ -14,9 +14,9 @@ private:
 	float cellSize;
 
 	void fillPresets();
-	bool** createPresetArray(std::string rle);
-	bool** insertArrayInMiddle(
-		bool** smaller,
+	int** createPresetArray(std::string rle);
+	int** insertArrayInMiddle(
+		int** smaller,
 		int smallerX,
 		int smallerY
 	);
@@ -25,12 +25,13 @@ private:
 	void setCellSize(float cellSize);
 
 public:
-	Loader();
-	bool** randomArray();
-	bool** randomPreset();
-	bool** initArr(int x, int y);
-	void deleteArr(bool** arr, int x);
-	bool** copyArr(bool** source, int x, int y);
+	Loader(bool isGameOfLife);
+	int** randomArray();
+	int** randomPreset();
+	int** emptyArray(int rawCellSize);
+	int** initArr(int x, int y);
+	void deleteArr(int** arr, int x);
+	int** copyArr(int** source, int x, int y);
 	void determineCellSize(int sx, int sy);
 	int getX() const;
 	int getY() const;
