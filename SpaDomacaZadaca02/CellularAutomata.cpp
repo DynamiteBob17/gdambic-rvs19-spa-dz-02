@@ -99,7 +99,7 @@ void CellularAutomata::setCell(int x, int y, int value, bool multiple) {
 
 		++hue;
 		if (hue > HUE_MAX) {
-			hue = 0;
+			hue = 1;
 		}
 	} else {
 		activeArr[x][y] = value;
