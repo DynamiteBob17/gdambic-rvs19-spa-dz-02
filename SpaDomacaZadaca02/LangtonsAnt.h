@@ -9,6 +9,9 @@ private:
 	int antY;
 	int antXDir;
 	int antYDir;
+	sf::Texture antTexture;
+	sf::Sprite antSprite;
+	int fpsDiff;
 
 	void setInitialAnt();
 	void turnAnt90DegClockwise();

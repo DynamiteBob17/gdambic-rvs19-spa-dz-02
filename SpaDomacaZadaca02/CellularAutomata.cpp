@@ -59,7 +59,7 @@ CellularAutomata::CellularAutomata(
 ) : window(window),
     loader(loader),
     frameRate(frameRate) {
-    activeArr = loader.initArr(0, 0);
+	activeArr = loader.initArr(1, 1);
     this->drawMode = drawMode;
     paused = false;
 	hue = 1;

@@ -2,6 +2,8 @@
 #include "Util.h"
 
 void GameOfLife::newGrid() {
+	loader.deleteArr(activeArr, 1);
+
 	std::random_device rd;
 	std::default_random_engine gen(rd());
 	std::uniform_int_distribution<int> dis(1, 20); // 5% chance for random array

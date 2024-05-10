@@ -26,7 +26,7 @@ int main() {
 	MouseListener* fallingSandMouseListener = new MouseListener(fallingSand, window);
 
 	Loader langtonsAntLoader(false);
-	LangtonsAnt* langtonsAnt = new LangtonsAnt(window, fallingSandLoader, font, 480);
+	LangtonsAnt* langtonsAnt = new LangtonsAnt(window, langtonsAntLoader, font, 2);
 	MouseListener* langtonsAntMouseListener = new MouseListener(langtonsAnt, window);
 	
 	std::vector<CellularAutomata*> cellularAutomata;

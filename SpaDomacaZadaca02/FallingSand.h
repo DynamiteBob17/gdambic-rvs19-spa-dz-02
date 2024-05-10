@@ -8,7 +8,6 @@ private:
 	std::random_device rd;
 	std::default_random_engine gen;
 	std::bernoulli_distribution dis;
-	float** velocityArr;
 
 public:
 	FallingSand(sf::RenderWindow& window, Loader& loader, sf::Font& font, int frameRate);

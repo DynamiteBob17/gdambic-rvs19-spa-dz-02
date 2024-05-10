@@ -2,6 +2,7 @@
 #include "Util.h"
 
 void FallingSand::newGrid() {
+	loader.deleteArr(activeArr, 1);
 	activeArr = loader.emptyArray(6);
 }
 
@@ -43,14 +44,13 @@ void FallingSand::update() {
 
 	int x = loader.getX();
 	int y = loader.getY();
-	bool changed = false;
 	int** nextArr = loader.initArr(x, y);
 
 	for (int i = 0; i < x; ++i) {
 		for (int j = 0; j < y; ++j) {
 			if (activeArr[i][j] == 0) continue;
 
-			if (j + 1 < y && !activeArr[i][j + 1]) {
+			if (j + 1 < y && activeArr[i][j + 1] == 0) {
 				nextArr[i][j + 1] = activeArr[i][j];
 			} else if (j + 1 < y) {
 				bool leftEmpty = i - 1 >= 0 && !activeArr[i - 1][j + 1];

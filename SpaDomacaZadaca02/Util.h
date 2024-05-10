@@ -33,7 +33,15 @@ namespace Util {
 		return sf::Color(r * 255, g * 255, b * 255);
 	}
 
+	inline bool isWithinCols(int i, int x) {
+		return i >= 0 && i < x;
+	}
+
+	inline bool isWithinRows(int j, int y) {
+		return j >= 0 && j < y;
+	}
+
 	inline bool isWithinBounds(int i, int j, int x, int y) {
-		return i >= 0 && i < x && j >= 0 && j < y;
+		return isWithinCols(i, x) && isWithinRows(j, y);
 	}
 }
