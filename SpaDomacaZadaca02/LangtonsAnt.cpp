@@ -14,6 +14,7 @@ void LangtonsAnt::setInitialAnt() {
 	antXDir = -1;
 	antYDir = 0;
 	hue = HUE_MAX * 6;
+	antSprite.setRotation(-90);
 }
 
 void LangtonsAnt::turnAnt90DegClockwise() {
@@ -41,7 +42,6 @@ LangtonsAnt::LangtonsAnt(
 	sf::Font& font,
 	int frameRate
 ) : CellularAutomata(window, loader, frameRate, false) {
-	newGrid();
 	paused = true;
 
 	if (!antTexture.loadFromFile("ant.png")) {
@@ -49,7 +49,8 @@ LangtonsAnt::LangtonsAnt(
 	}
 	antSprite.setTexture(antTexture);
 	antSprite.setOrigin(antTexture.getSize().x / 2.f, antTexture.getSize().y / 2.f);
-	antSprite.rotate(-90);
+
+	newGrid();
 
 	fpsDiff = 5;
 
