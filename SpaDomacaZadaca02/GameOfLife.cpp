@@ -234,7 +234,3 @@ void GameOfLife::handleControls(sf::Event& event) {
 		}
 	}
 }
-
-int GameOfLife::getLifetime() const {
-	return lifetime;
-}

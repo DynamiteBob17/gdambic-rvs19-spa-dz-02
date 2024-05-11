@@ -36,6 +36,9 @@
     <ClCompile Include="LangtonsAnt.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ElementaryCellularAutomata.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameOfLife.h">
@@ -57,6 +60,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="LangtonsAnt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ElementaryCellularAutomata.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

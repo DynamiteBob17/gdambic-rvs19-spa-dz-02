@@ -120,6 +120,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CellularAutomata.cpp" />
+    <ClCompile Include="ElementaryCellularAutomata.cpp" />
     <ClCompile Include="FallingSand.cpp" />
     <ClCompile Include="GameOfLife.cpp" />
     <ClCompile Include="LangtonsAnt.cpp" />
@@ -129,6 +130,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CellularAutomata.h" />
+    <ClInclude Include="ElementaryCellularAutomata.h" />
     <ClInclude Include="FallingSand.h" />
     <ClInclude Include="GameOfLife.h" />
     <ClInclude Include="LangtonsAnt.h" />

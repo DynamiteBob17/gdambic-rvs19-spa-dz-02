@@ -35,5 +35,4 @@ public:
 	void update() override;
 	void drawControls() override;
 	void handleControls(sf::Event& event) override;
-	int getLifetime() const;
 };
