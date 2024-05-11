@@ -59,7 +59,7 @@ GameOfLife::GameOfLife(
 
 	newGrid();
 
-	controlsStr = "SPACE start/pause\nD toggle draw mode\n(L_CLICK alive, R_CLICK dead)\nC kill alive cells\nLEFT prev, RIGHT next\nDOWN --fps, UP ++fps\nfps = ";
+	controlsStr = "SPACE start/pause\nD toggle draw mode\n(L_CLICK alive, R_CLICK dead)\nLEFT prev, RIGHT next game\nC kill alive cells\nDOWN --fps, UP ++fps\nfps = ";
 	controls.setFont(font);
 	controls.setString(controlsStr + std::to_string(frameRate));
 	controls.setCharacterSize(20 * Util::getScale());
@@ -233,4 +233,8 @@ void GameOfLife::handleControls(sf::Event& event) {
 			break;
 		}
 	}
+}
+
+unsigned int GameOfLife::getFrameRate() const {
+	return drawMode ? 60 : frameRate;
 }

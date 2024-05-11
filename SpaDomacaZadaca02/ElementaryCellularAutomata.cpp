@@ -88,3 +88,7 @@ void ElementaryCellularAutomata::handleControls(sf::Event& event) {
 		}
 	}
 }
+
+unsigned int ElementaryCellularAutomata::getFrameRate() const {
+	return frameRate;
+}

@@ -73,10 +73,6 @@ Loader CellularAutomata::getLoader() {
 	return loader;
 }
 
-unsigned int CellularAutomata::getFrameRate() const {
-	return frameRate;
-}
-
 bool CellularAutomata::isDrawMode() const {
 	return drawMode;
 }

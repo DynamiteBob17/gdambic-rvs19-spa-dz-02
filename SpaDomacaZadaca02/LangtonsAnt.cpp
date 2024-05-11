@@ -144,3 +144,7 @@ void LangtonsAnt::handleControls(sf::Event& event) {
 		}
 	}
 }
+
+unsigned int LangtonsAnt::getFrameRate() const {
+	return frameRate;
+}

@@ -94,3 +94,7 @@ void FallingSand::handleControls(sf::Event& event) {
 		}
 	}
 }
+
+unsigned int FallingSand::getFrameRate() const {
+	return frameRate;
+}

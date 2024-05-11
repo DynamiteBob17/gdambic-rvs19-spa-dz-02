@@ -35,8 +35,8 @@ public:
 	virtual void update() = 0;
 	virtual void drawControls() = 0;
 	virtual void handleControls(sf::Event& event) = 0;
+	virtual unsigned int getFrameRate() const = 0;
 	Loader getLoader();
-	unsigned int getFrameRate() const;
 	bool isDrawMode() const;
 	void setCell(int x, int y, int value, bool multiple);
 };

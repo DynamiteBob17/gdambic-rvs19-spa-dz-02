@@ -96,19 +96,37 @@ int main() {
 	cellularAutomataBindings[sf::Keyboard::Key::Num8] = 7;
 	cellularAutomataBindings[sf::Keyboard::Key::Num9] = 8;
 
-	sf::Text modes;
 	std::stringstream modesSS;
 	modesSS << "Keys to change rules: ";
 	for (size_t i = 0; i < cellularAutomata.size(); i++) {
 		modesSS << std::to_string(i + 1);
 		if (i != cellularAutomata.size() - 1) modesSS << " ";
 	}
+	sf::Text modes;
 	modes.setFont(font);
 	modes.setString(modesSS.str());
 	modes.setCharacterSize(20 * Util::getScale());
 	modes.setFillColor(sf::Color::White);
 	modes.setStyle(sf::Text::Bold);
 	modes.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width - 400 * Util::getScale(), 0));
+
+	sf::Text modesCycle;
+	modesCycle.setFont(font);
+	modesCycle.setString("\nor Q/E for prev/next rule");
+	modesCycle.setCharacterSize(20 * Util::getScale());
+	modesCycle.setFillColor(sf::Color::White);
+	modesCycle.setStyle(sf::Text::Bold);
+	modesCycle.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width - 285 * Util::getScale(), 0));
+
+	sf::Text hideText;
+	hideText.setFont(font);
+	hideText.setString("\n\nH hide/show all text");
+	hideText.setCharacterSize(20 * Util::getScale());
+	hideText.setFillColor(sf::Color::White);
+	hideText.setStyle(sf::Text::Bold);
+	hideText.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width - 210 * Util::getScale(), 0));
+
+	bool showText = true;
 
 	while (window.isOpen()) {
 		sf::Event event;
@@ -125,6 +143,14 @@ int main() {
 						window.setFramerateLimit(cellularAutomata[cellularAutomataIndex]->getFrameRate());
 					}
 				}
+
+				if (event.key.code == sf::Keyboard::Key::H) {
+					showText = !showText;
+				} else if (event.key.code == sf::Keyboard::Key::Q && cellularAutomataIndex > 0) {
+					window.setFramerateLimit(cellularAutomata[--cellularAutomataIndex]->getFrameRate());
+				} else if (event.key.code == sf::Keyboard::Key::E && cellularAutomataIndex < cellularAutomata.size() - 1) {
+					window.setFramerateLimit(cellularAutomata[++cellularAutomataIndex]->getFrameRate());
+				}
 			}
 		}
 
@@ -132,8 +158,12 @@ int main() {
 
 		window.clear();
 		cellularAutomata[cellularAutomataIndex]->draw();
-		cellularAutomata[cellularAutomataIndex]->drawControls();
-		window.draw(modes);
+		if (showText) {
+			cellularAutomata[cellularAutomataIndex]->drawControls();
+			window.draw(modes);
+			window.draw(modesCycle);
+			window.draw(hideText);
+		}
 		window.display();
 
 		cellularAutomata[cellularAutomataIndex]->update();
